@@ -54,7 +54,7 @@ echo "Building the tiller image"
 make docker-build VERSION="${VERSION}"
 
 echo "Pushing image to gcr.io"
-docker push "gcr.io/kubernetes-helm/tiller:${VERSION}"
+docker push "cgetzen/tiller:${VERSION}"
 
 echo "Building helm binaries"
 make build-cross
