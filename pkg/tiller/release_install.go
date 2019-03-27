@@ -100,6 +100,7 @@ func (s *ReleaseServer) prepareRelease(req *services.InstallReleaseRequest) (*re
 				Description:   fmt.Sprintf("Install failed: %s", err),
 			},
 			Version: 0,
+			Seed:    10,
 		}
 		if manifestDoc != nil {
 			rel.Manifest = manifestDoc.String()
@@ -122,6 +123,7 @@ func (s *ReleaseServer) prepareRelease(req *services.InstallReleaseRequest) (*re
 		Manifest: manifestDoc.String(),
 		Hooks:    hooks,
 		Version:  int32(revision),
+		Seed:     10,
 	}
 	if len(notesTxt) > 0 {
 		rel.Info.Status.Notes = notesTxt

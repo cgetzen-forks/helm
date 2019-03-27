@@ -131,6 +131,7 @@ func (s *ReleaseServer) prepareUpdate(req *services.UpdateReleaseRequest) (*rele
 			Description:   "Preparing upgrade", // This should be overwritten later.
 		},
 		Version:  revision,
+		Seed:     currentRelease.Seed,
 		Manifest: manifestDoc.String(),
 		Hooks:    hooks,
 	}

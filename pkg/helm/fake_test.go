@@ -47,7 +47,8 @@ data:
     IsUpgrade: %t
     Name: new-release
     Namespace: default
-    Revision: %d
+	Revision: %d
+	Seed: %d
     Service: Tiller
     Time:
       seconds: 242085845
@@ -73,7 +74,7 @@ func releaseWithChart(opts *MockReleaseOptions) *release.Release {
 }
 
 func withManifest(r *release.Release, isUpgrade bool) *release.Release {
-	r.Manifest = fmt.Sprintf(cmOutputTemplate, !isUpgrade, isUpgrade, r.Version)
+	r.Manifest = fmt.Sprintf(cmOutputTemplate, !isUpgrade, isUpgrade, r.Version, r.Seed)
 	return r
 }
 

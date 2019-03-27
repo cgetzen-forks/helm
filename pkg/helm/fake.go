@@ -281,6 +281,7 @@ metadata:
 type MockReleaseOptions struct {
 	Name        string
 	Version     int32
+	Seed        int32
 	Chart       *chart.Chart
 	Config      *chart.Config
 	StatusCode  release.Status_Code
@@ -300,6 +301,7 @@ func ReleaseMock(opts *MockReleaseOptions) *release.Release {
 	}
 
 	var version int32 = 1
+	var seed int32 = 10
 	if opts.Version != 0 {
 		version = opts.Version
 	}
@@ -348,6 +350,7 @@ func ReleaseMock(opts *MockReleaseOptions) *release.Release {
 		Chart:     ch,
 		Config:    config,
 		Version:   version,
+		Seed:      seed,
 		Namespace: namespace,
 		Hooks: []*release.Hook{
 			{

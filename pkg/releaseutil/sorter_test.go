@@ -40,6 +40,7 @@ func tsRelease(name string, vers int32, dur time.Duration, code rspb.Status_Code
 	return &rspb.Release{
 		Name:    name,
 		Version: vers,
+		Seed:    10,
 		Info:    info,
 		Chart: &chart.Chart{
 			Metadata: &chart.Metadata{

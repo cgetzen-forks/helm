@@ -18,8 +18,9 @@ package tiller
 
 import (
 	"fmt"
-	"k8s.io/helm/pkg/storage"
 	"strings"
+
+	"k8s.io/helm/pkg/storage"
 
 	ctx "golang.org/x/net/context"
 
@@ -111,6 +112,7 @@ func (s *ReleaseServer) prepareRollback(req *services.RollbackReleaseRequest) (*
 			Description: description,
 		},
 		Version:  currentRelease.Version + 1,
+		Seed:     previousRelease.Seed,
 		Manifest: previousRelease.Manifest,
 		Hooks:    previousRelease.Hooks,
 	}

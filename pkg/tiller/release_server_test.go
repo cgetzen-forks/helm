@@ -274,6 +274,7 @@ func namedReleaseStub(name string, status release.Status_Code) *release.Release 
 		Chart:   chartStub(),
 		Config:  &chart.Config{Raw: `name: value`},
 		Version: 1,
+		Seed:    10,
 		Hooks: []*release.Hook{
 			{
 				Name:     "test-cm",
@@ -312,6 +313,7 @@ func upgradeReleaseVersion(rel *release.Release) *release.Release {
 		Chart:   rel.Chart,
 		Config:  rel.Config,
 		Version: rel.Version + 1,
+		Seed:    rel.Seed,
 	}
 }
 
@@ -474,6 +476,7 @@ func releaseWithKeepStub(rlsName string) *release.Release {
 		Chart:   ch,
 		Config:  &chart.Config{Raw: `name: value`},
 		Version: 1,
+		Seed:    10,
 	}
 
 	helm.RenderReleaseMock(rl, false)

@@ -26,7 +26,7 @@ import (
 	"golang.org/x/net/context"
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 
 	"k8s.io/helm/pkg/helm"
 	"k8s.io/helm/pkg/proto/hapi/chart"
@@ -346,6 +346,7 @@ func releaseStub() *release.Release {
 		Chart:   chartStub(),
 		Config:  &chart.Config{Raw: `name: value`},
 		Version: 1,
+		Seed:    10,
 		Hooks: []*release.Hook{
 			{
 				Name:     "finding-nemo",

@@ -102,6 +102,9 @@ func TestListReleasesByStatus(t *testing.T) {
 			for _, rel := range mrs.val.Releases {
 				if rel.Name == name {
 					found = true
+					if rel.Seed != 10 {
+						t.Errorf("Seed did not equal 10: %q, %d", name, rel.Seed)
+					}
 				}
 			}
 			if !found {
