@@ -47,8 +47,8 @@ data:
     IsUpgrade: %t
     Name: new-release
     Namespace: default
-	Revision: %d
-	Seed: %d
+    Revision: %d
+    Seed: %d
     Service: Tiller
     Time:
       seconds: 242085845
