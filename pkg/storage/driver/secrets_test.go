@@ -20,7 +20,7 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	v1 "k8s.io/api/core/v1"
+	"k8s.io/api/core/v1"
 	rspb "k8s.io/helm/pkg/proto/hapi/release"
 )
 

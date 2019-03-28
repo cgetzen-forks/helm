@@ -18,9 +18,8 @@ package tiller
 
 import (
 	"fmt"
-	"strings"
-
 	"k8s.io/helm/pkg/storage"
+	"strings"
 
 	ctx "golang.org/x/net/context"
 
