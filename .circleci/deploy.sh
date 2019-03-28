@@ -26,8 +26,7 @@ if [[ -n "${CIRCLE_TAG:-}" ]]; then
 elif [[ "${CIRCLE_BRANCH:-}" == "master" ]]; then
   VERSION="canary"
 else
-  echo "Skipping deploy step; this is neither master or a tag"
-  exit
+  VERSION="${CIRCLE_SHA1}"
 fi
 
 echo "Install docker client"
