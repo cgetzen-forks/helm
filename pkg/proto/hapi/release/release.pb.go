@@ -4,12 +4,9 @@
 package release
 
 import (
-	fmt "fmt"
-
 	proto "github.com/golang/protobuf/proto"
-
+	fmt "fmt"
 	math "math"
-
 	hapi_chart "k8s.io/helm/pkg/proto/hapi/chart"
 	hapi_chart3 "k8s.io/helm/pkg/proto/hapi/chart"
 )
