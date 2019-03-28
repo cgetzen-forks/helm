@@ -26,7 +26,7 @@ import (
 	"golang.org/x/net/context"
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-	v1 "k8s.io/api/core/v1"
+	"k8s.io/api/core/v1"
 
 	"k8s.io/helm/pkg/helm"
 	"k8s.io/helm/pkg/proto/hapi/chart"
