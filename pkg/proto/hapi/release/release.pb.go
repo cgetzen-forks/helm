@@ -3,13 +3,11 @@
 
 package release
 
-import (
-	proto "github.com/golang/protobuf/proto"
-	fmt "fmt"
-	math "math"
-	hapi_chart "k8s.io/helm/pkg/proto/hapi/chart"
-	hapi_chart3 "k8s.io/helm/pkg/proto/hapi/chart"
-)
+import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
+import math "math"
+import hapi_chart "k8s.io/helm/pkg/proto/hapi/chart"
+import hapi_chart3 "k8s.io/helm/pkg/proto/hapi/chart"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
