@@ -20,9 +20,6 @@ if [[ -n "${CIRCLE_PR_NUMBER:-}" ]]; then
   exit
 fi
 
-: ${GCLOUD_SERVICE_KEY:?"GCLOUD_SERVICE_KEY environment variable is not set"}
-: ${PROJECT_NAME:?"PROJECT_NAME environment variable is not set"}
-
 VERSION=
 if [[ -n "${CIRCLE_TAG:-}" ]]; then
   VERSION="${CIRCLE_TAG}"
