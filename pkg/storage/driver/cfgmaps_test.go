@@ -17,10 +17,9 @@ import (
 	"encoding/base64"
 	"reflect"
 	"testing"
-	"unsafe"
 
 	"github.com/gogo/protobuf/proto"
-	v1 "k8s.io/api/core/v1"
+	"k8s.io/api/core/v1"
 
 	rspb "k8s.io/helm/pkg/proto/hapi/release"
 )
@@ -30,96 +29,6 @@ func TestConfigMapName(t *testing.T) {
 	if c.Name() != ConfigMapsDriverName {
 		t.Errorf("Expected name to be %q, got %q", ConfigMapsDriverName, c.Name())
 	}
-}
-
-type visit struct {
-	a1  unsafe.Pointer
-	a2  unsafe.Pointer
-	typ reflect.Type
-}
-
-func deepValueEqual(t *testing.T, v1, v2 reflect.Value, visited map[visit]bool, depth int) bool {
-	if !v1.IsValid() || !v2.IsValid() {
-		return v1.IsValid() == v2.IsValid()
-	}
-	if v1.Type() != v2.Type() {
-		return false
-	}
-
-	// if depth > 10 { panic("deepValueEqual") }	// for debugging
-
-	// We want to avoid putting more in the visited map than we need to.
-	// For any possible reference cycle that might be encountered,
-	// hard(t) needs to return true for at least one of the types in the cycle.
-	hard := func(k reflect.Kind) bool {
-		switch k {
-		case reflect.Map, reflect.Slice, reflect.Ptr, reflect.Interface:
-			return true
-		}
-		return false
-	}
-
-	if v1.CanAddr() && v2.CanAddr() && hard(v1.Kind()) {
-		addr1 := unsafe.Pointer(v1.UnsafeAddr())
-		addr2 := unsafe.Pointer(v2.UnsafeAddr())
-		if uintptr(addr1) > uintptr(addr2) {
-			// Canonicalize order to reduce number of entries in visited.
-			// Assumes non-moving garbage collector.
-			addr1, addr2 = addr2, addr1
-		}
-
-		// Short circuit if references are already seen.
-		typ := v1.Type()
-		v := visit{addr1, addr2, typ}
-		if visited[v] {
-			return true
-		}
-
-		// Remember for later.
-		visited[v] = true
-	}
-
-	switch v1.Kind() {
-	case reflect.Struct:
-		t.Errorf("AAAA")
-		for i, n := 0, v1.NumField(); i < n; i++ {
-			if !deepValueEqual(t, v1.Field(i), v2.Field(i), visited, depth+1) {
-				return false
-			}
-		}
-		return true
-	case reflect.Map:
-		if v1.IsNil() != v2.IsNil() {
-			return false
-		}
-		if v1.Len() != v2.Len() {
-			return false
-		}
-		if v1.Pointer() == v2.Pointer() {
-			return true
-		}
-		for _, k := range v1.MapKeys() {
-			val1 := v1.MapIndex(k)
-			val2 := v2.MapIndex(k)
-			if !val1.IsValid() || !val2.IsValid() || !deepValueEqual(t, val1, val2, visited, depth+1) {
-				return false
-			}
-		}
-		return true
-	default:
-		// Normal equality suffices
-		t.Errorf("|%+v|%+v|", v1, v2)
-		t.Errorf("%v, %v", v1.Type(), v2.Type())
-		t.Errorf("%+v", v1 == v2)
-		return v1 == v2
-		// return valueInterface(v1, false) == valueInterface(v2, false)
-	}
-}
-
-func deepEqual(t *testing.T, x, y interface{}) bool {
-	v1 := reflect.ValueOf(x)
-	v2 := reflect.ValueOf(y)
-	return deepValueEqual(t, v1, v2, make(map[visit]bool), 0)
 }
 
 func TestConfigMapGet(t *testing.T) {
@@ -138,8 +47,8 @@ func TestConfigMapGet(t *testing.T) {
 		t.Fatalf("Failed to get release: %s", err)
 	}
 	// compare fetched release with original
-	if !reflect.DeepEqual(rel.Info, got.Info) {
-		t.Errorf("Expected {%q}, got {%q}", rel.Info, got.Info)
+	if !reflect.DeepEqual(rel, got) {
+		t.Errorf("Expected {%q}, got {%q}", rel, got)
 	}
 }
 
