@@ -19,8 +19,8 @@ import (
 	"testing"
 
 	"github.com/gogo/protobuf/proto"
-	"k8s.io/api/core/v1"
 
+	v1 "k8s.io/api/core/v1"
 	rspb "k8s.io/helm/pkg/proto/hapi/release"
 )
 
@@ -33,10 +33,11 @@ func TestSecretName(t *testing.T) {
 
 func TestSecretGet(t *testing.T) {
 	vers := int32(1)
+	seed := int32(10)
 	name := "smug-pigeon"
 	namespace := "default"
 	key := testKey(name, vers)
-	rel := releaseStub(name, vers, namespace, rspb.Status_DEPLOYED)
+	rel := releaseStub(name, vers, seed, namespace, rspb.Status_DEPLOYED)
 
 	secrets := newTestFixtureSecrets(t, []*rspb.Release{rel}...)
 
@@ -53,10 +54,11 @@ func TestSecretGet(t *testing.T) {
 
 func TestUNcompressedSecretGet(t *testing.T) {
 	vers := int32(1)
+	seed := int32(10)
 	name := "smug-pigeon"
 	namespace := "default"
 	key := testKey(name, vers)
-	rel := releaseStub(name, vers, namespace, rspb.Status_DEPLOYED)
+	rel := releaseStub(name, vers, seed, namespace, rspb.Status_DEPLOYED)
 
 	// Create a test fixture which contains an uncompressed release
 	secret, err := newSecretsObject(key, rel, nil)
@@ -85,12 +87,12 @@ func TestUNcompressedSecretGet(t *testing.T) {
 
 func TestSecretList(t *testing.T) {
 	secrets := newTestFixtureSecrets(t, []*rspb.Release{
-		releaseStub("key-1", 1, "default", rspb.Status_DELETED),
-		releaseStub("key-2", 1, "default", rspb.Status_DELETED),
-		releaseStub("key-3", 1, "default", rspb.Status_DEPLOYED),
-		releaseStub("key-4", 1, "default", rspb.Status_DEPLOYED),
-		releaseStub("key-5", 1, "default", rspb.Status_SUPERSEDED),
-		releaseStub("key-6", 1, "default", rspb.Status_SUPERSEDED),
+		releaseStub("key-1", 1, 10, "default", rspb.Status_DELETED),
+		releaseStub("key-2", 1, 10, "default", rspb.Status_DELETED),
+		releaseStub("key-3", 1, 10, "default", rspb.Status_DEPLOYED),
+		releaseStub("key-4", 1, 10, "default", rspb.Status_DEPLOYED),
+		releaseStub("key-5", 1, 10, "default", rspb.Status_SUPERSEDED),
+		releaseStub("key-6", 1, 10, "default", rspb.Status_SUPERSEDED),
 	}...)
 
 	// list all deleted releases
@@ -134,10 +136,11 @@ func TestSecretCreate(t *testing.T) {
 	secrets := newTestFixtureSecrets(t)
 
 	vers := int32(1)
+	seed := int32(10)
 	name := "smug-pigeon"
 	namespace := "default"
 	key := testKey(name, vers)
-	rel := releaseStub(name, vers, namespace, rspb.Status_DEPLOYED)
+	rel := releaseStub(name, vers, seed, namespace, rspb.Status_DEPLOYED)
 
 	// store the release in a secret
 	if err := secrets.Create(key, rel); err != nil {
@@ -158,10 +161,11 @@ func TestSecretCreate(t *testing.T) {
 
 func TestSecretUpdate(t *testing.T) {
 	vers := int32(1)
+	seed := int32(10)
 	name := "smug-pigeon"
 	namespace := "default"
 	key := testKey(name, vers)
-	rel := releaseStub(name, vers, namespace, rspb.Status_DEPLOYED)
+	rel := releaseStub(name, vers, seed, namespace, rspb.Status_DEPLOYED)
 
 	secrets := newTestFixtureSecrets(t, []*rspb.Release{rel}...)
 

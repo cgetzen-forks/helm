@@ -73,7 +73,7 @@ func releaseWithChart(opts *MockReleaseOptions) *release.Release {
 }
 
 func withManifest(r *release.Release, isUpgrade bool) *release.Release {
-	r.Manifest = fmt.Sprintf(cmOutputTemplate, !isUpgrade, isUpgrade, r.Version, r.Seed)
+	r.Manifest = fmt.Sprintf(cmOutputTemplate, !isUpgrade, isUpgrade, r.Version)
 	return r
 }
 

@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"testing"
 
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -29,10 +29,11 @@ import (
 	rspb "k8s.io/helm/pkg/proto/hapi/release"
 )
 
-func releaseStub(name string, vers int32, namespace string, code rspb.Status_Code) *rspb.Release {
+func releaseStub(name string, vers, seed int32, namespace string, code rspb.Status_Code) *rspb.Release {
 	return &rspb.Release{
 		Name:      name,
 		Version:   vers,
+		Seed:      seed,
 		Namespace: namespace,
 		Info:      &rspb.Info{Status: &rspb.Status{Code: code}},
 	}
@@ -45,15 +46,15 @@ func testKey(name string, vers int32) string {
 func tsFixtureMemory(t *testing.T) *Memory {
 	hs := []*rspb.Release{
 		// rls-a
-		releaseStub("rls-a", 4, "default", rspb.Status_DEPLOYED),
-		releaseStub("rls-a", 1, "default", rspb.Status_SUPERSEDED),
-		releaseStub("rls-a", 3, "default", rspb.Status_SUPERSEDED),
-		releaseStub("rls-a", 2, "default", rspb.Status_SUPERSEDED),
+		releaseStub("rls-a", 4, 10, "default", rspb.Status_DEPLOYED),
+		releaseStub("rls-a", 1, 10, "default", rspb.Status_SUPERSEDED),
+		releaseStub("rls-a", 3, 10, "default", rspb.Status_SUPERSEDED),
+		releaseStub("rls-a", 2, 10, "default", rspb.Status_SUPERSEDED),
 		// rls-b
-		releaseStub("rls-b", 4, "default", rspb.Status_DEPLOYED),
-		releaseStub("rls-b", 1, "default", rspb.Status_SUPERSEDED),
-		releaseStub("rls-b", 3, "default", rspb.Status_SUPERSEDED),
-		releaseStub("rls-b", 2, "default", rspb.Status_SUPERSEDED),
+		releaseStub("rls-b", 4, 10, "default", rspb.Status_DEPLOYED),
+		releaseStub("rls-b", 1, 10, "default", rspb.Status_SUPERSEDED),
+		releaseStub("rls-b", 3, 10, "default", rspb.Status_SUPERSEDED),
+		releaseStub("rls-b", 2, 10, "default", rspb.Status_SUPERSEDED),
 	}
 
 	mem := NewMemory()
