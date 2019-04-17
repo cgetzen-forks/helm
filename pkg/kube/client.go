@@ -435,10 +435,11 @@ func perform(infos Result, fn ResourceActorFunc) error {
 		return ErrNoObjectsVisited
 	}
 	errs := make(chan error)
+
 	for _, info := range infos {
-		go func() {
-			errs <- fn(info)
-		}()
+		go func(i *resource.Info) {
+			errs <- fn(i)
+		}(info)
 	}
 	for range infos {
 		err := <-errs
