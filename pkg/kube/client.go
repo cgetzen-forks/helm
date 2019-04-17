@@ -23,18 +23,19 @@ import (
 	goerrors "errors"
 	"fmt"
 	"io"
-	"k8s.io/apimachinery/pkg/api/meta"
 	"log"
 	"sort"
 	"strings"
 	"time"
 
-	"github.com/evanphx/json-patch"
+	"k8s.io/apimachinery/pkg/api/meta"
+
+	jsonpatch "github.com/evanphx/json-patch"
 	appsv1 "k8s.io/api/apps/v1"
 	appsv1beta1 "k8s.io/api/apps/v1beta1"
 	appsv1beta2 "k8s.io/api/apps/v1beta2"
 	batch "k8s.io/api/batch/v1"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	extv1beta1 "k8s.io/api/extensions/v1beta1"
 	apiequality "k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -106,6 +107,7 @@ func (c *Client) Create(namespace string, reader io.Reader, timeout int64, shoul
 	if err := perform(infos, createResource); err != nil {
 		return err
 	}
+	c.Log("waiting for resource(s)")
 	if shouldWait {
 		return c.waitForResources(time.Duration(timeout)*time.Second, infos)
 	}
