@@ -104,7 +104,7 @@ func (c *Client) Create(namespace string, reader io.Reader, timeout int64, shoul
 		return buildErr
 	}
 	c.Log("creating %d resource(s)", len(infos))
-	if err := perform(infos, createResource); err != nil {
+	if err := perform(c, infos, createResource); err != nil {
 		return err
 	}
 	c.Log("waiting for resource(s)")
@@ -200,7 +200,7 @@ func (c *Client) Get(namespace string, reader io.Reader) (string, error) {
 	var objPods = make(map[string][]v1.Pod)
 
 	missing := []string{}
-	err = perform(infos, func(info *resource.Info) error {
+	err = perform(c, infos, func(info *resource.Info) error {
 		c.Log("Doing get for %s: %q", info.Mapping.GroupVersionKind.Kind, info.Name)
 		if err := info.Get(); err != nil {
 			c.Log("WARNING: Failed Get for resource %q: %s", info.Name, err)
@@ -387,7 +387,7 @@ func (c *Client) Delete(namespace string, reader io.Reader) error {
 	if err != nil {
 		return err
 	}
-	return perform(infos, func(info *resource.Info) error {
+	return perform(c, infos, func(info *resource.Info) error {
 		c.Log("Starting delete for %q %s", info.Name, info.Mapping.GroupVersionKind.Kind)
 		err := deleteResource(info)
 		return c.skipIfNotFound(err)
@@ -427,18 +427,23 @@ func (c *Client) WatchUntilReady(namespace string, reader io.Reader, timeout int
 	}
 	// For jobs, there's also the option to do poll c.Jobs(namespace).Get():
 	// https://github.com/adamreese/kubernetes/blob/master/test/e2e/job.go#L291-L300
-	return perform(infos, c.watchTimeout(time.Duration(timeout)*time.Second))
+	return perform(c, infos, c.watchTimeout(time.Duration(timeout)*time.Second))
 }
 
-func perform(infos Result, fn ResourceActorFunc) error {
+func perform(c *Client, infos Result, fn ResourceActorFunc) error {
 	if len(infos) == 0 {
 		return ErrNoObjectsVisited
 	}
 	errs := make(chan error)
 
 	for _, info := range infos {
+		kind := info.Object.GetObjectKind().GroupVersionKind()
+		c.Log(fmt.Sprintf("Range: %s %s %s", kind.Group, kind.Version, kind.Kind))
 		go func(i *resource.Info) {
+			innerKind := i.Object.GetObjectKind().GroupVersionKind()
+			c.Log(fmt.Sprintf("Creating: %s %s %s", innerKind.Group, innerKind.Version, innerKind.Kind))
 			errs <- fn(i)
+			c.Log(fmt.Sprintf("Created: %s %s %s", innerKind.Group, innerKind.Version, innerKind.Kind))
 		}(info)
 	}
 	for range infos {
