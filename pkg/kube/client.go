@@ -458,11 +458,11 @@ func perform(c *Client, infos Result, fn ResourceActorFunc) error {
 	// 	}
 	// }()
 
-	go func() {
+	go func(innerInfos Result) {
 		finished := make(chan bool, 10000)
-		kind := infos[0].Object.GetObjectKind().GroupVersionKind().Kind
+		kind := innerInfos[0].Object.GetObjectKind().GroupVersionKind().Kind
 		counter := 0
-		for _, info := range infos {
+		for _, info := range innerInfos {
 			currentKind := info.Object.GetObjectKind().GroupVersionKind().Kind
 			if kind != currentKind {
 				// Wait until the previous kind has finished
@@ -480,7 +480,7 @@ func perform(c *Client, infos Result, fn ResourceActorFunc) error {
 				c.Log(fmt.Sprintf("Created: %s", currentKind))
 			}(info)
 		}
-	}()
+	}(infos)
 
 	// for _, info := range infos {
 	// 	kind := info.Object.GetObjectKind().GroupVersionKind().Kind
