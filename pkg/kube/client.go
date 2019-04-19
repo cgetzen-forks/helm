@@ -446,7 +446,7 @@ func perform(c *Client, infos Result, fn ResourceActorFunc) error {
 	return nil
 }
 
-func batchPerform(infos Result, fn ResourceActorFunc, errs chan error) {
+func batchPerform(infos Result, fn ResourceActorFunc, errs chan<- error) {
 	finished := make(chan bool, 10000)
 	kind := infos[0].Object.GetObjectKind().GroupVersionKind().Kind
 	counter := 0
