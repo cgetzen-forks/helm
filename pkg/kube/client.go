@@ -435,64 +435,8 @@ func perform(c *Client, infos Result, fn ResourceActorFunc) error {
 		return ErrNoObjectsVisited
 	}
 	errs := make(chan error)
-	// started := make(chan string)
-	// finished := make(chan bool, 1000)
-	// safeContinue := make(chan bool)
+	go batchPerform(infos, fn, errs)
 
-	// go func() {
-	// 	safeContinue <- true
-	// 	kind := <-started
-	// 	counter := 1
-	// 	for nextKind, ok :=<-started; ok {
-	// 		counter = counter + 1
-	// 		if nextKind == kind {
-	// 			safeContinue <- true
-	// 		} else {
-	// 			for i := 0; i <= counter; i++ {
-	// 				<-finished
-	// 			}
-	// 			safeContinue <- true
-	// 			kind = nextKind
-	// 			counter = 1
-	// 		}
-	// 	}
-	// }()
-
-	go func(infos Result) {
-		finished := make(chan bool, 10000)
-		kind := infos[0].Object.GetObjectKind().GroupVersionKind().Kind
-		counter := 0
-		for _, info := range infos {
-			currentKind := info.Object.GetObjectKind().GroupVersionKind().Kind
-			if kind != currentKind {
-				// Wait until the previous kind has finished
-				for i := 0; i < counter; i++ {
-					<-finished
-				}
-				counter = 0
-				kind = currentKind
-			}
-			counter = counter + 1
-			go func(i *resource.Info) {
-				errs <- fn(i)
-				finished <- true
-			}(info)
-		}
-	}(infos)
-
-	// for _, info := range infos {
-	// 	kind := info.Object.GetObjectKind().GroupVersionKind().Kind
-	// 	c.Log(fmt.Sprintf("Range: %s", kind))
-	// 	go func(i *resource.Info) {
-	// 		innerKind := i.Object.GetObjectKind().GroupVersionKind().Kind
-	// 		started <- innerKind.Kind
-	// 		safe := <- safeContinue
-	// 		// c.Log(fmt.Sprintf("Creating: %s", innerKind))
-	// 		errs <- fn(i)
-	// 		finished <- true
-	// 		// c.Log(fmt.Sprintf("Created: %s", innerKind))
-	// 	}(info)
-	// }
 	for range infos {
 		err := <-errs
 		if err != nil {
@@ -500,6 +444,28 @@ func perform(c *Client, infos Result, fn ResourceActorFunc) error {
 		}
 	}
 	return nil
+}
+
+func batchPerform(infos Result, fn ResourceActorFunc, errs chan error) {
+	finished := make(chan bool, 10000)
+	kind := infos[0].Object.GetObjectKind().GroupVersionKind().Kind
+	counter := 0
+	for _, info := range infos {
+		currentKind := info.Object.GetObjectKind().GroupVersionKind().Kind
+		if kind != currentKind {
+			// Wait until the previous kind has finished
+			for i := 0; i < counter; i++ {
+				<-finished
+			}
+			counter = 0
+			kind = currentKind
+		}
+		counter = counter + 1
+		go func(i *resource.Info) {
+			errs <- fn(i)
+			finished <- true
+		}(info)
+	}
 }
 
 func createResource(info *resource.Info) error {
